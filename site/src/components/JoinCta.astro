@@ -1,0 +1,27 @@
+---
+import { verein } from '../data/verein';
+
+const { nummer, ansprechperson, text } = verein.whatsapp;
+const href = nummer ? `https://wa.me/${nummer}?text=${encodeURIComponent(text)}` : null;
+---
+<section id="mitmachen">
+  <div class="container">
+    <div class="box">
+      <p class="eyebrow">Mitmachen</p>
+      <h2>Lust bekommen?</h2>
+      <p>Schreib {ansprechperson || 'uns'} einfach auf WhatsApp – wir sagen dir, wann jemand am Platz ist.</p>
+      {href
+        ? <a class="wa" href={href} rel="noopener">💬 Auf WhatsApp schreiben</a>
+        : <p class="soon">Komm einfach am Platz vorbei – ein Kontakt per WhatsApp folgt in Kürze.</p>}
+    </div>
+  </div>
+</section>
+
+<style>
+  .box { background: var(--ink); color: #fff; border-radius: 18px; padding: clamp(24px, 5vw, 44px); }
+  .eyebrow { color: #6cc4f2; }
+  h2 { margin-bottom: 10px; }
+  p { opacity: .9; max-width: 560px; }
+  .wa { display: inline-block; margin-top: 10px; background: #25d366; color: #06301a; font-weight: 800; text-decoration: none; padding: .8rem 1.3rem; border-radius: 999px; }
+  .soon { font-weight: 600; }
+</style>

@@ -1,0 +1,51 @@
+---
+const station = 'https://xn--msg-bersee-deb.de/Programme/';
+---
+<section id="wetter" class="band">
+  <div class="container">
+    <p class="eyebrow">Wetter &amp; Webcam</p>
+    <h2>Wie sieht es gerade am Platz aus?</h2>
+    <div class="grid-2">
+      <article class="card">
+        <h3>Wind heute <small class="muted">(alle 10 Min.)</small></h3>
+        <div class="bars" data-live="bars"><p class="muted">Lade Messwerte …</p></div>
+        <dl>
+          <div><dt>Temperatur</dt><dd><span data-live="temp">–</span> °C</dd></div>
+          <div><dt>Luftdruck</dt><dd><span data-live="pressure">–</span> hPa</dd></div>
+          <div><dt>Windrichtung</dt><dd><span data-live="dir">–</span></dd></div>
+        </dl>
+      </article>
+      <article class="card">
+        <h3>Webcam – die letzten Stunden</h3>
+        <div class="thumbs" data-live="thumbs"><p class="muted">Lade Webcam …</p></div>
+        <p class="muted">Tipp: Stehen Autos am Platz, fliegt meistens jemand.</p>
+      </article>
+    </div>
+    <details>
+      <summary>Diagramme der Wetterstation</summary>
+      <div class="charts">
+        <img src={`${station}wind.jpg`} data-refresh-src={`${station}wind.jpg`} alt="Windgeschwindigkeit heute (Diagramm der Wetterstation)" loading="lazy" />
+        <img src={`${station}windrose_db_msg1.php`} data-refresh-src={`${station}windrose_db_msg1.php`} alt="Windrose heute" loading="lazy" />
+      </div>
+    </details>
+  </div>
+</section>
+
+<style>
+  h3 { font-size: 1.05rem; margin-bottom: 12px; }
+  .bars { min-height: 110px; }
+  .bars :global(.wind-bars) { width: 100%; height: 90px; fill: var(--blue); }
+  .bars :global(.axis) { display: flex; justify-content: space-between; font-size: .75rem; color: var(--muted); }
+  dl { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 14px 0 0; }
+  dt { font-size: .8rem; color: var(--muted); }
+  dd { margin: 0; font-weight: 700; }
+  .thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; min-height: 140px; }
+  .thumbs > :global(p) { grid-column: 1 / -1; }
+  .thumbs :global(figure) { margin: 0; position: relative; }
+  .thumbs :global(img) { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 6px; }
+  .thumbs :global(figcaption) { position: absolute; left: 4px; bottom: 4px; font-size: .7rem; background: rgba(0, 0, 0, .55); color: #fff; padding: 0 4px; border-radius: 3px; }
+  details { margin-top: 18px; }
+  summary { cursor: pointer; font-weight: 600; color: var(--blue-dark); }
+  .charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 12px; }
+  .charts img { background: #fff; border-radius: 8px; }
+</style>

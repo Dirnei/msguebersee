@@ -1,10 +1,23 @@
 ---
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import WeatherSection from '../components/WeatherSection.astro';
+import WhatWeDo from '../components/WhatWeDo.astro';
+import GoodToKnow from '../components/GoodToKnow.astro';
+import Airfield from '../components/Airfield.astro';
+import JoinCta from '../components/JoinCta.astro';
 import Footer from '../components/Footer.astro';
 ---
 <Base title="MSG Übersee – Modellflug am Chiemsee" description="Modellsportgruppe Übersee e. V.: Modellflugplatz in Übersee-Luft. Live-Wetter, Webcam und wie du mitmachen kannst.">
   <Header />
-  <main></main>
+  <main>
+    <Hero />
+    <WeatherSection />
+    <WhatWeDo />
+    <GoodToKnow />
+    <Airfield />
+    <JoinCta />
+  </main>
   <Footer />
 </Base>

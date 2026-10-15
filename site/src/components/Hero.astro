@@ -1,0 +1,26 @@
+---
+import { Image } from 'astro:assets';
+import flugplatz from '../assets/photos/flugplatz.jpeg';
+import LiveTile from './LiveTile.astro';
+---
+<section class="hero">
+  <Image src={flugplatz} alt="Der Flugplatz der MSG Übersee" data-live="hero" class="hero-img" loading="eager" />
+  <div class="shade"></div>
+  <div class="container content">
+    <div>
+      <h1>Selber fliegen.<br />Am Chiemsee.</h1>
+      <p class="lead">Modellflug in Übersee – komm einfach vorbei.</p>
+      <a class="btn btn-lg" href="#flugplatz">So kommst du zu uns →</a>
+    </div>
+    <LiveTile />
+  </div>
+</section>
+
+<style>
+  .hero { position: relative; min-height: min(78vh, 560px); display: flex; align-items: flex-end; padding: 0; overflow: hidden; color: #fff; }
+  .hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 40, 70, 0) 30%, rgba(0, 40, 70, .82)); }
+  .content { position: relative; display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; align-items: flex-end; padding-block: 32px; }
+  h1 { font-size: clamp(2.2rem, 7vw, 3.4rem); font-weight: 800; }
+  .lead { font-size: 1.1rem; opacity: .92; margin: 10px 0 18px; }
+</style>

@@ -1,0 +1,19 @@
+<div class="tile" aria-live="polite">
+  <p class="eyebrow">Live vom Platz <span data-live="time"></span></p>
+  <p class="values">
+    <span><b data-live="wind">–</b> <small>km/h <span data-live="dir"></span></small></span>
+    <span><b data-live="temp">–</b><small> °C</small></span>
+  </p>
+  <p class="status" data-live="status" data-level="off">Lade Wetterdaten …</p>
+</div>
+
+<style>
+  .tile { background: rgba(255, 255, 255, .96); color: var(--ink); border-radius: var(--radius); padding: 14px 18px; min-width: 240px; }
+  .values { display: flex; gap: 20px; align-items: baseline; margin: 6px 0 4px; }
+  b { font-size: 2rem; font-weight: 800; }
+  .status { margin: 0; font-weight: 600; font-size: .95rem; }
+  .status::before { content: ''; display: inline-block; width: .7em; height: .7em; border-radius: 50%; margin-right: .45em; background: var(--muted); }
+  .status[data-level='gruen']::before { background: var(--green); }
+  .status[data-level='gelb']::before { background: var(--yellow); }
+  .status[data-level='rot']::before { background: var(--red); }
+</style>

@@ -1,0 +1,27 @@
+---
+import Polaroid from './Polaroid.astro';
+import panorama from '../assets/photos/panorama.jpg';
+import drohne from '../assets/photos/drohne.jpg';
+import drachen from '../assets/photos/drachen.jpeg';
+---
+<section id="was-wir-machen">
+  <div class="container">
+    <p class="eyebrow">Was wir machen</p>
+    <h2>Bauen, fliegen, fachsimpeln.</h2>
+    <p class="intro">
+      Flugzeuge, Segler, Hubschrauber – aber auch Autos und Schiffe. Im Sommer sind wir am Platz,
+      im Winter wird gebaut. Bei uns findest du Leute mit jahrzehntelanger Erfahrung, die gern helfen.
+    </p>
+    <div class="photos">
+      <Polaroid src={panorama} alt="Der Flugplatz aus der Luft fotografiert" caption="Von oben" tilt={-2.5} />
+      <Polaroid src={drohne} alt="Modellflugplatz in Übersee-Luft mit Bergblick" caption="Unser Flugplatz" tilt={1.8} />
+      <Polaroid src={drachen} alt="Drachen am Himmel über dem Platz" caption="Zu windig? Dann Drachen." tilt={-1.2} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .intro { color: var(--ink-soft); max-width: 640px; margin: -8px 0 30px; }
+  .photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; padding-inline: 6px; }
+  @media (max-width: 760px) { .photos { grid-template-columns: 1fr; max-width: 360px; margin-inline: auto; } }
+</style>

@@ -1,0 +1,25 @@
+---
+import { verein } from '../data/verein';
+---
+<section class="band">
+  <div class="container">
+    <p class="eyebrow">Gut zu wissen</p>
+    <h2>Kein Vorwissen nötig – wir helfen dir.</h2>
+    <ul>
+      {verein.gutZuWissen.map((k) => (
+        <li class="card">
+          <span class="icon" aria-hidden="true">{k.icon}</span>
+          <h3>{k.titel}</h3>
+          <p>{k.text}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .icon { font-size: 1.7rem; }
+  h3 { font-size: 1.05rem; margin: 8px 0 6px; }
+  p { margin: 0; color: var(--ink-soft); font-size: .95rem; }
+</style>
