@@ -1,0 +1,24 @@
+---
+import Base from './Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+<Base title={`${title} – MSG Übersee`} description={`${title} der Modellsportgruppe Übersee e. V.`}>
+  <Header />
+  <main class="container legal">
+    <h1>{title}</h1>
+    <slot />
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .legal { max-width: 760px; padding-block: 48px; }
+  h1 { font-size: 2rem; margin-bottom: 24px; }
+  .legal :global(h2) { font-size: 1.2rem; margin: 28px 0 8px; }
+</style>

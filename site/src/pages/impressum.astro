@@ -1,0 +1,25 @@
+---
+import Legal from '../layouts/Legal.astro';
+import { verein } from '../data/verein';
+
+const i = verein.impressum;
+---
+<Legal title="Impressum">
+  <h2>Angaben gemäß § 5 DDG</h2>
+  <p>
+    {verein.name}<br />
+    {i.anschrift.map((zeile) => <>{zeile}<br /></>)}
+  </p>
+  <p>
+    Vertreten durch den Vorstand{i.vorstand.length > 0 && <>: {i.vorstand.join(', ')}</>}.
+  </p>
+  <h2>Registereintrag</h2>
+  <p>Eingetragen im Vereinsregister.<br />Registergericht: {i.registergericht}<br />Registernummer: {i.registernummer}</p>
+  <h2>Kontakt</h2>
+  <p>E-Mail: <a href={i.emailHref}>{i.email}</a></p>
+  <h2>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h2>
+  <p>
+    {i.verantwortlich.name}<br />
+    {i.verantwortlich.anschrift.map((zeile) => <>{zeile}<br /></>)}
+  </p>
+</Legal>
