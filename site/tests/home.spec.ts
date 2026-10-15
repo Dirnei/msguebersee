@@ -61,7 +61,7 @@ test('stale or old station data never shows a green light', async ({ page }) => 
   await page.goto('/');
 
   const status = page.locator('[data-live="status"]').first();
-  await expect(status).toHaveText('Letzter Messwert von 20:40 Uhr');
+  await expect(status).toHaveText('Letzter Messwert um 20:40 Uhr');
   await expect(status).toHaveAttribute('data-level', 'off');
 });
 
@@ -95,4 +95,41 @@ test('legal pages and documents are linked', async ({ page }) => {
   await expect(page.getByText('VR 1083')).toBeVisible();
   const res = await page.request.get('/dokumente/platzordnung.pdf');
   expect(res.headers()['content-type']).toContain('pdf');
+});
+
+test('data from an earlier day shows its date and no chart for "today"', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-10-16T09:00:00+02:00'));
+  await stubImages(page);
+  await page.route(`${RELAY}/weather`, (r) => r.fulfill({ json: weather('2026-10-15T20:40:00+02:00', 8, true), headers: CORS }));
+  await page.route(`${RELAY}/webcam`, (r) => r.fulfill({ json: webcam, headers: CORS }));
+  await page.goto('/');
+
+  await expect(page.locator('[data-live="status"]').first()).toHaveText('Letzter Messwert vom 15.10. um 20:40 Uhr');
+  await expect(page.locator('[data-live="bars"]')).toHaveText('Heute noch keine Messwerte');
+  await expect(page.locator('[data-live="thumbs"] figcaption').first()).toHaveText('15.10. 19:42');
+});
+
+test('values from an earlier refresh do not linger when the relay fails', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-10-15T20:45:00+02:00') });
+  await stubImages(page);
+  let calls = 0;
+  await page.route(`${RELAY}/weather`, (r) => (calls++ === 0
+    ? r.fulfill({ json: weather('2026-10-15T20:40:00+02:00', 8), headers: CORS })
+    : r.abort('connectionrefused')));
+  await page.route(`${RELAY}/webcam`, (r) => r.fulfill({ json: webcam, headers: CORS }));
+  await page.goto('/');
+  await expect(page.locator('[data-live="wind"]').first()).toHaveText('8');
+
+  await page.clock.runFor(5 * 60 * 1000 + 1000);
+  await expect(page.locator('[data-live="status"]').first()).toHaveText('Wetterdaten gerade nicht verfügbar');
+  await expect(page.locator('[data-live="wind"]').first()).toHaveText('–');
+  await expect(page.locator('[data-live="time"]').first()).toHaveText('');
+});
+
+test('without a WhatsApp number the join block does not promise WhatsApp', async ({ page }) => {
+  await stubImages(page);
+  await page.route(`${RELAY}/**`, (r) => r.abort());
+  await page.goto('/');
+  await expect(page.locator('#mitmachen')).not.toContainText('Schreib');
+  await expect(page.locator('#mitmachen')).toContainText('Komm einfach am Platz vorbei');
 });

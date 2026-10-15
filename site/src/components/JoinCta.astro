@@ -9,10 +9,12 @@ const href = nummer ? `https://wa.me/${nummer}?text=${encodeURIComponent(text)}`
     <div class="box">
       <p class="eyebrow">Mitmachen</p>
       <h2>Lust bekommen?</h2>
-      <p>Schreib {ansprechperson || 'uns'} einfach auf WhatsApp – wir sagen dir, wann jemand am Platz ist.</p>
       {href
-        ? <a class="wa" href={href} rel="noopener">💬 Auf WhatsApp schreiben</a>
-        : <p class="soon">Komm einfach am Platz vorbei – ein Kontakt per WhatsApp folgt in Kürze.</p>}
+        ? <>
+            <p>Schreib {ansprechperson || 'uns'} einfach auf WhatsApp – wir sagen dir, wann jemand am Platz ist.</p>
+            <a class="wa" href={href} rel="noopener">💬 Auf WhatsApp schreiben</a>
+          </>
+        : <p>Komm einfach am Platz vorbei – schau vorher auf die Webcam, ob jemand da ist.</p>}
     </div>
   </div>
 </section>
@@ -23,5 +25,4 @@ const href = nummer ? `https://wa.me/${nummer}?text=${encodeURIComponent(text)}`
   h2 { margin-bottom: 10px; }
   p { opacity: .9; max-width: 560px; }
   .wa { display: inline-block; margin-top: 10px; background: #25d366; color: #06301a; font-weight: 800; text-decoration: none; padding: .8rem 1.3rem; border-radius: 999px; }
-  .soon { font-weight: 600; }
 </style>

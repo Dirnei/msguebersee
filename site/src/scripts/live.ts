@@ -1,5 +1,5 @@
 import { verein } from '../data/verein';
-import { ampel, formatClock, isOutdated, windBarsSvg, type WeatherResponse, type WebcamResponse } from '../lib/weather';
+import { ampel, formatClock, formatDay, isOutdated, isToday, windBarsSvg, type WeatherResponse, type WebcamResponse } from '../lib/weather';
 
 const RELAY = (import.meta.env.PUBLIC_RELAY_URL ?? '').replace(/\/$/, '');
 const REFRESH_MS = 5 * 60 * 1000;
@@ -28,6 +28,16 @@ function setMessage(name: string, text: string) {
   }
 }
 
+// "20:40" for today, "15.10. 20:40" for an earlier day
+function stamp(iso: string): string {
+  return isToday(iso, Date.now()) ? formatClock(iso) : `${formatDay(iso)} ${formatClock(iso)}`;
+}
+
+function clearValues() {
+  for (const name of ['wind', 'dir', 'temp', 'pressure']) setText(name, '–');
+  setText('time', '');
+}
+
 async function getJson<T>(path: string): Promise<T> {
   const res = await fetch(RELAY + path, { cache: 'no-store' });
   if (!res.ok) throw new Error(`${path}: HTTP ${res.status}`);
@@ -35,9 +45,11 @@ async function getJson<T>(path: string): Promise<T> {
 }
 
 function renderWeather(w: WeatherResponse) {
-  for (const el of all('[data-live="bars"]')) el.innerHTML = windBarsSvg(w.today);
   const c = w.current;
+  const fromToday = c !== null && isToday(c.time, Date.now());
+  for (const el of all('[data-live="bars"]')) el.innerHTML = windBarsSvg(fromToday ? w.today : []);
   if (!c) {
+    clearValues();
     setStatus('off', 'Heute noch keine Messwerte');
     return;
   }
@@ -45,9 +57,12 @@ function renderWeather(w: WeatherResponse) {
   setText('dir', c.windDir);
   setText('temp', String(c.tempC));
   setText('pressure', String(c.pressureHpa));
-  if (w.stale || isOutdated(c.time, Date.now())) {
+  if (!fromToday) {
+    setText('time', `· Stand ${formatDay(c.time)} ${formatClock(c.time)}`);
+    setStatus('off', `Letzter Messwert vom ${formatDay(c.time)} um ${formatClock(c.time)} Uhr`);
+  } else if (w.stale || isOutdated(c.time, Date.now())) {
     setText('time', `· Stand ${formatClock(c.time)}`);
-    setStatus('off', `Letzter Messwert von ${formatClock(c.time)} Uhr`);
+    setStatus('off', `Letzter Messwert um ${formatClock(c.time)} Uhr`);
   } else {
     setText('time', `· ${formatClock(c.time)}`);
     const a = ampel(c.windKmh, verein.ampel);
@@ -64,7 +79,7 @@ function renderWebcam(w: WebcamResponse) {
       hero.removeAttribute('srcset');
       hero.removeAttribute('sizes');
       hero.src = latest.url;
-      hero.alt = `Webcam am Flugplatz, ${formatClock(latest.time)} Uhr`;
+      hero.alt = `Webcam am Flugplatz, ${stamp(latest.time)} Uhr`;
       hero.dataset.current = latest.url;
     };
     probe.src = latest.url;
@@ -75,10 +90,10 @@ function renderWebcam(w: WebcamResponse) {
         const fig = document.createElement('figure');
         const img = document.createElement('img');
         img.src = image.url;
-        img.alt = `Webcam ${formatClock(image.time)} Uhr`;
+        img.alt = `Webcam ${stamp(image.time)} Uhr`;
         img.loading = 'lazy';
         const cap = document.createElement('figcaption');
-        cap.textContent = formatClock(image.time);
+        cap.textContent = stamp(image.time);
         fig.append(img, cap);
         return fig;
       }),
@@ -100,6 +115,7 @@ async function refresh() {
   if (weather.status === 'fulfilled') {
     renderWeather(weather.value);
   } else {
+    clearValues();
     setStatus('off', 'Wetterdaten gerade nicht verfügbar');
     setMessage('bars', 'Messwerte gerade nicht verfügbar');
   }

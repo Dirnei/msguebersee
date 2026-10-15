@@ -21,6 +21,17 @@ export function formatClock(iso: string): string {
   return iso.slice(11, 16);
 }
 
+const BERLIN_DATE = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Berlin' });
+
+// Station dates are Berlin wall-clock dates; compare against "today" in Berlin, not the browser zone.
+export function isToday(iso: string, nowMs: number): boolean {
+  return iso.slice(0, 10) === BERLIN_DATE.format(nowMs);
+}
+
+export function formatDay(iso: string): string {
+  return `${iso.slice(8, 10)}.${iso.slice(5, 7)}.`;
+}
+
 export function isOutdated(iso: string, nowMs: number, maxAgeMin = 30): boolean {
   return nowMs - Date.parse(iso) > maxAgeMin * 60_000;
 }

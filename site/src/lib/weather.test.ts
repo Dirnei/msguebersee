@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { ampel, formatClock, isOutdated, windBarsSvg, type Point } from './weather';
+import { ampel, formatClock, formatDay, isOutdated, isToday, windBarsSvg, type Point } from './weather';
 
 const limits = { gruenBisKmh: 15, gelbBisKmh: 25 };
 const point = (time: string, windKmh: number): Point => ({
@@ -47,4 +47,15 @@ describe('windBarsSvg', () => {
   test('no data gives a friendly message instead of an empty chart', () => {
     expect(windBarsSvg([])).toBe('<p class="muted">Heute noch keine Messwerte</p>');
   });
+});
+
+test('isToday compares with the current date in Europe/Berlin', () => {
+  // 23:30 UTC on the 15th is already the 16th in Berlin (CEST)
+  const now = Date.parse('2026-10-15T23:30:00Z');
+  expect(isToday('2026-10-16T00:10:00+02:00', now)).toBe(true);
+  expect(isToday('2026-10-15T23:50:00+02:00', now)).toBe(false);
+});
+
+test('formatDay gives a short German date', () => {
+  expect(formatDay('2026-10-05T20:40:00+02:00')).toBe('05.10.');
 });
