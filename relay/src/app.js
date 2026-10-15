@@ -23,7 +23,8 @@ export function createApp({ config, fetchText, now = Date.now }) {
     }
     if (req.method !== 'GET' && req.method !== 'HEAD') return sendJson(res, 405, { error: 'method not allowed' });
 
-    const path = new URL(req.url, 'http://relay').pathname;
+    // plain split: new URL() throws on targets like "//[" and would crash the process
+    const path = (req.url ?? '/').split('?')[0];
     try {
       switch (path) {
         case '/health':

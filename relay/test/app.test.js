@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
+import { connect } from 'node:net';
 import { readFileSync } from 'node:fs';
 import { createApp } from '../src/app.js';
 
@@ -89,4 +90,20 @@ test('HEAD behaves like GET (reverse proxies, uptime checks)', async (t) => {
   const res = await fetch(`${s.url}/webcam/latest.jpg`, { method: 'HEAD', redirect: 'manual' });
   assert.equal(res.status, 302);
   assert.equal((await fetch(`${s.url}/health`, { method: 'HEAD' })).status, 200);
+});
+
+test('malformed request target does not crash the relay', async (t) => {
+  const s = await start(upstream);
+  t.after(s.close);
+  const port = new URL(s.url).port;
+  const raw = await new Promise((resolve, reject) => {
+    const request = ['GET //[ HTTP/1.1', 'Host: x', 'Connection: close', '', ''].join('\r\n');
+    const socket = connect(port, '127.0.0.1', () => socket.end(request));
+    let data = '';
+    socket.on('data', (d) => { data += d; });
+    socket.on('end', () => resolve(data));
+    socket.on('error', reject);
+  });
+  assert.match(raw, /^HTTP\/1\.1 404/);
+  assert.equal(await (await fetch(`${s.url}/health`)).text(), 'ok');
 });
