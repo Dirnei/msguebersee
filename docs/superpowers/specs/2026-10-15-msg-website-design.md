@@ -13,7 +13,8 @@ Die Website der Modellsportgruppe Übersee e. V. (msg-übersee.de, bisher WordPr
 - Statische Seite mit **Astro**, gehostet auf **GitHub Pages**, zunächst unter der Standard-Domain `*.github.io`. Die Domain msg-übersee.de wird später umgestellt (nicht Teil dieses Projekts).
 - Wetterstation und Webcam laufen weiter auf dem alten PHP-Hoster unter `https://xn--msg-bersee-deb.de/Programme/`. Dort gibt es weder JSON noch CORS.
 - Der Nutzer betreibt einen Docker-Host mit Reverse Proxy (HTTPS). Dort läuft ein kleines **Relay**.
-- Es gibt **keine E-Mail-Adresse**. Kontakt läuft ausschließlich über WhatsApp.
+- Als Kontaktweg auf der Seite gibt es **nur WhatsApp**. Die gesetzlich nötige E-Mail im Impressum bleibt `vorstand@msg-übersee.de` von der alten Seite. Ob die noch funktioniert, muss der Verein bestätigen.
+- Laut Platzordnung dürfen **nur Mitglieder** (oder Gäste mit Erlaubnis des Vorstands) fliegen. Zuschauen und vorbeikommen darf jeder. Die Texte müssen das richtig darstellen.
 - Inhalte, die vom Verein bestätigt werden müssen (Beitrag, Lehrer-Schüler-Betrieb, Ansprechperson, WhatsApp-Nummer, Fotos), sind als Platzhalter markiert.
 
 ## Nicht im Umfang
@@ -70,7 +71,7 @@ Bewusst minimal: Node (aktuelle LTS), **keine Laufzeit-Abhängigkeiten**, keine 
 - Variante „A“: weiße Kopfleiste mit dem neuen Logo, darunter das Webcam-Bild über die volle Breite mit Headline und Live-Kachel.
 - Akzentfarbe ist das Logo-Blau `#0090DA`, Text dunkel `#14212C`, Flächen hell `#F4F7FA`. Keine Orange-Töne.
 - Fotos im Polaroid-Stil: weißer Rahmen, breiter unterer Rand mit Bildunterschrift, leicht gedreht.
-- Mobil zuerst. Auf dem Handy liegt alles untereinander, die Navigation wird zum Menü-Button.
+- Mobil zuerst. Auf dem Handy liegt alles untereinander. Die Anker-Links der Navigation werden ausgeblendet, sichtbar bleibt nur der Button „Mitmachen“.
 - Systemschrift-Stack oder eine selbst gehostete Variable-Font, kein Google-Fonts-CDN (Datenschutz).
 
 ### Seiten
@@ -80,9 +81,9 @@ Bewusst minimal: Node (aktuelle LTS), **keine Laufzeit-Abhängigkeiten**, keine 
 1. **Kopfleiste:** Logo, Anker-Navigation (Wetter & Webcam, Was wir machen, Flugplatz) und der Button „Mitmachen“.
 2. **Hero:** Das neueste Webcam-Bild (`/webcam/latest.jpg`; als Fallback ein festes Vereinsfoto), dazu die Headline „Selber fliegen. Am Chiemsee.“, eine Unterzeile, der Button „So kommst du zu uns“ und die Live-Kachel mit Uhrzeit, Wind (km/h und Richtung), Temperatur und Ampel.
 3. **Wetter & Webcam:** Windverlauf von heute als Balkendiagramm (inline-SVG aus `today`), aktuelle Werte (Temperatur, Luftdruck, Windrichtung) und die letzten 6 Webcam-Bilder. Zusätzlich werden `Programme/wind.jpg` und die Windrose direkt vom alten Server eingebunden. Diese Bilder funktionieren auch ohne Relay.
-4. **Was wir machen:** Kurzer Text und 3–4 Polaroid-Fotos.
+4. **Was wir machen:** Kurzer Text und 3 Polaroid-Fotos (von der alten Seite: Flugplatz, Drohnenbild, Drachen).
 5. **Gut zu wissen:** Vier gleichwertige Kacheln **ohne Reihenfolge**: Einfach vorbeikommen · Mitfliegen auf Anfrage (Lehrer-Schüler) · Hilfe beim ersten Modell · Mitglied werden (Beitrag).
-6. **Flugplatz:** Adresse (Übersee, Ortsteil Luft), eine statische OpenStreetMap-Karte ohne Cookies bzw. Tracking und der Button „Route planen“ (Link mit Koordinaten).
+6. **Flugplatz:** Lage (Übersee, Ortsteil Luft, an der Bahnlinie München–Salzburg), die Flugzeiten (Elektro, Verbrenner, Verbrenner-Hubschrauber, von der alten Seite) und ein Link auf die Platzordnung (PDF). Die OpenStreetMap-Karte (Embed ohne Cookies) erscheint erst, wenn in `verein.ts` Koordinaten eingetragen sind. „Route planen“ verlinkt auf OSM.
 7. **Mitmachen:** Dunkler Block mit dem Button „Auf WhatsApp schreiben“ (`https://wa.me/<nummer>?text=<vorbefüllt>`) und dem Namen der Ansprechperson.
 8. **Fußzeile:** Satzung (PDF), Impressum, Datenschutz.
 
@@ -90,7 +91,9 @@ Bewusst minimal: Node (aktuelle LTS), **keine Laufzeit-Abhängigkeiten**, keine 
 
 ### Vereinsdaten
 
-Alle vereinsspezifischen Angaben stehen in **`site/src/data/verein.ts`**: Name, Adresse, Koordinaten, WhatsApp-Nummer, Ansprechperson, Beitragstext, Ampel-Grenzwerte, Relay-URL und Texte der Kacheln. Die Datei ist kommentiert und für Nicht-Entwickler direkt auf GitHub bearbeitbar. Platzhalter sind mit `TODO(Verein)` markiert.
+Alle vereinsspezifischen Angaben stehen in **`site/src/data/verein.ts`**: Name, Lage, Koordinaten, WhatsApp-Nummer, Ansprechperson, Flugzeiten, Ampel-Grenzwerte, Impressumsangaben und Texte der Kacheln. Die Datei ist kommentiert und für Nicht-Entwickler direkt auf GitHub bearbeitbar. Offene Angaben sind im Code-Kommentar mit `TODO(Verein)` markiert. **Auf der Seite erscheint nie ein Platzhaltertext**: Fehlt eine Angabe (z. B. die WhatsApp-Nummer), wird der Teil ausgeblendet oder durch einen neutralen Text ersetzt.
+
+Die Relay-URL kommt nicht aus `verein.ts`, sondern zur Build-Zeit aus `PUBLIC_RELAY_URL`. In GitHub Actions wird sie aus der Repo-Variable `RELAY_URL` gesetzt. Ist sie leer, sind die Live-Funktionen aus und die Seite zeigt die Fallback-Texte.
 
 ### Live-Daten im Browser
 
@@ -105,4 +108,4 @@ Alle vereinsspezifischen Angaben stehen in **`site/src/data/verein.ts`**: Name, 
 
 ## Offene Punkte (Verein)
 
-WhatsApp-Nummer und Ansprechperson · Beitragshöhe · Bestätigung Lehrer-Schüler-Betrieb · Ampel-Grenzwerte · 3–4 Fotos (Werkstatt, Flugtag, Modelle) · Prüfung von Impressum und Datenschutz.
+WhatsApp-Nummer und Ansprechperson · Beitragshöhe · Bestätigung Lehrer-Schüler-Betrieb · Ampel-Grenzwerte · Koordinaten des Platzes · Namen des vertretungsberechtigten Vorstands und Vereinsanschrift fürs Impressum · Funktioniert `vorstand@msg-übersee.de` noch? · weitere Fotos (Werkstatt, Flugtag) · Prüfung von Impressum und Datenschutz.
