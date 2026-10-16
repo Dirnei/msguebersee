@@ -24,9 +24,9 @@ describe('tagesart', () => {
 
 test('Flugzeiten text matches what the club published', () => {
   expect(verein.flugzeiten.map(beschreibung)).toEqual([
-    ['Mo–So: Sonnenaufgang bis Sonnenuntergang'],
-    ['Mo–Sa: 10–12, 14–16 und 17:30–19 Uhr', 'So & Feiertag: 10–12 und 14–17:30 Uhr'],
-    ['Mo–Fr: 10–12 und 14–15:30 Uhr', 'Sa: 10–12 Uhr', 'So & Feiertag: kein Flugbetrieb'],
+    ['Mo-So: Sonnenaufgang bis Sonnenuntergang'],
+    ['Mo-Sa: 10-12, 14-16 und 17:30-19 Uhr', 'So & Feiertag: 10-12 und 14-17:30 Uhr'],
+    ['Mo-Fr: 10-12 und 14-15:30 Uhr', 'Sa: 10-12 Uhr', 'So & Feiertag: kein Flugbetrieb'],
   ]);
 });
 
@@ -44,7 +44,7 @@ describe('timeContext', () => {
     expect(elektro.windows).toHaveLength(1);
     expect(berlinClock(elektro.windows[0].from)).toBe(berlinClock(ctx.sun[0].rise));
     expect(verbrenner.windows.map((w) => `${berlinClock(w.from)}-${berlinClock(w.to)}`)).toEqual(['10:00-12:00', '14:00-17:30']);
-    expect(verbrenner.windows[0].tip).toBe('Verbrennermodelle sonn- & feiertags: 10–12 und 14–17:30 Uhr');
+    expect(verbrenner.windows[0].tip).toBe('Verbrennermodelle sonn- & feiertags: 10-12 und 14-17:30 Uhr');
     expect(heli.windows).toEqual([]);
   });
 

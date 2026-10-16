@@ -14,6 +14,8 @@ services:
       context: ./site
       args:
         PUBLIC_RELAY_URL: http://localhost:8089
+        # aus der Datei .env (nicht im Git), z. B. WHATSAPP_NUMMER=+49 151 12345678
+        WHATSAPP_NUMMER: ${WHATSAPP_NUMMER:-}
     depends_on:
       - relay
     ports:

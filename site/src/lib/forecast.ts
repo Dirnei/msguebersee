@@ -23,8 +23,8 @@ export function upcoming(hours: ForecastHour[], nowMs: number, count = 12): Fore
 
 const hourLabel = (iso: string) => `${Number(iso.slice(11, 13))} Uhr`;
 
-// Only ever warns. Models miss local winds at the field (seen: station 13–22 km/h from S while every
-// model said 1–5), so a forecast must never promise calm; it may only announce stronger wind.
+// Only ever warns. Models miss local winds at the field (seen: station 13-22 km/h from S while every
+// model said 1-5), so a forecast must never promise calm; it may only announce stronger wind.
 export function forecastSummary(next: ForecastHour[], limits: Limits, span = 6): string {
   const window = next.slice(0, span);
   if (window.length === 0) return '';

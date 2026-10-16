@@ -127,18 +127,25 @@ test('values from an earlier refresh do not linger when the relay fails', async 
 
   await page.clock.runFor(5 * 60 * 1000 + 1000);
   await expect(page.locator('[data-live="status"]').first()).toHaveText('Wetterdaten gerade nicht verfügbar');
-  await expect(page.locator('[data-live="wind"]').first()).toHaveText('–');
+  await expect(page.locator('[data-live="wind"]').first()).toHaveText('-');
   await expect(page.locator('[data-live="time"]').first()).toHaveText('');
 });
 
-test('without a WhatsApp number the join block does not promise WhatsApp', async ({ page }) => {
+test('join block links to WhatsApp with a prefilled text, and Datenschutz covers it', async ({ page }) => {
   await stubImages(page);
   await page.route(`${RELAY}/**`, (r) => r.abort());
   await page.goto('/');
-  await expect(page.locator('#mitmachen')).not.toContainText('Schreib');
-  await expect(page.locator('#mitmachen')).toContainText('Komm einfach am Platz vorbei');
+  const join = page.locator('#mitmachen');
+  await expect(join).toContainText('Schreib Stefan einfach auf WhatsApp');
+  // the number is not in the page until someone actually reaches for the button
+  expect(await page.content()).not.toContain('15100000000');
+  const button = join.getByRole('link', { name: 'Auf WhatsApp schreiben' });
+  await expect(button).toHaveAttribute('href', '#mitmachen');
+  await button.hover();
+  await expect(button).toHaveAttribute('href', /^https:\/\/wa\.me\/4915100000000\?text=Hallo%2C%20ich/);
+  await expect(button).toHaveAttribute('target', '_blank');
   await page.goto('/datenschutz/');
-  await expect(page.locator('main')).not.toContainText('WhatsApp');
+  await expect(page.locator('main')).toContainText('Kontakt über WhatsApp');
 });
 
 test('hero marks the live webcam and opens a large view that can step through images', async ({ page }) => {
@@ -232,7 +239,7 @@ test('documents and external links open in a new tab, page links do not', async 
   }
 });
 
-test('own charts: wind, rose, temperature, pressure and table from relay data, with tooltips', async ({ page }) => {
+test('own charts: wind, rose, temperature and pressure from relay data, with tooltips', async ({ page }) => {
   await page.clock.setFixedTime(new Date('2026-10-15T20:45:00+02:00'));
   await stubImages(page);
   await page.route(`${RELAY}/weather`, (r) => r.fulfill({ json: weather('2026-10-15T20:40:00+02:00', 8), headers: CORS }));
@@ -250,7 +257,6 @@ test('own charts: wind, rose, temperature, pressure and table from relay data, w
   await expect(page.locator('[data-chart="rose"] svg')).toHaveAttribute('aria-label', 'Windrose heute: meist aus SW');
   await expect(page.locator('[data-chart="temp"] svg')).toHaveAttribute('aria-label', 'Temperatur heute, zuletzt 14 °C');
   await expect(page.locator('[data-chart="pressure"] svg')).toHaveAttribute('aria-label', 'Luftdruck heute, zuletzt 1030 hPa');
-  await expect(page.locator('[data-chart="table"] tbody tr')).toHaveCount(2);
 });
 
 test('traffic light follows the strongest wind of the last hour, not just the latest reading', async ({ page }) => {
@@ -264,7 +270,7 @@ test('traffic light follows the strongest wind of the last hour, not just the la
 
   await expect(page.locator('[data-live="wind"]').first()).toHaveText('8');
   const status = page.locator('[data-live="status"]').first();
-  await expect(status).toHaveText('Böig – nur für Erfahrene');
+  await expect(status).toHaveText('Böig, nur für Erfahrene');
   await expect(status).toHaveAttribute('data-level', 'gelb');
   await expect(page.locator('[data-live="peak"]').first()).toHaveText('Letzte Stunde bis 20 km/h');
 });
@@ -309,7 +315,7 @@ test('charts show night, sunrise/sunset and flight-time strips; card text comes 
   await expect(wind.locator('.row-label')).toHaveText(['Elektro', 'Verbrenner', 'Hubschrauber']);
   // Thursday: electric 1, combustion 3, helicopter 2
   await expect(wind.locator('.fly')).toHaveCount(6);
-  await expect(page.locator('#flugplatz')).toContainText('Mo–Sa: 10–12, 14–16 und 17:30–19 Uhr');
+  await expect(page.locator('#flugplatz')).toContainText('Mo-Sa: 10-12, 14-16 und 17:30-19 Uhr');
 });
 
 test('compass needle turns the short way round between refreshes', async ({ page }) => {
@@ -346,4 +352,15 @@ test('cold start: wind values show while the webcam is still loading; Leaflet wa
   await page.locator('[data-map]').scrollIntoViewIfNeeded();
   await expect(page.locator('.leaflet-container')).toBeVisible();
   expect(leaflet.some((u) => u.endsWith('.css'))).toBe(true);
+});
+
+test('e-mail address is hidden from the page source but readable and clickable for visitors', async ({ page, request }) => {
+  for (const path of ['/impressum/', '/datenschutz/']) {
+    const html = await (await request.get(path)).text();
+    expect(html).not.toContain('vorstand@');
+    expect(html).not.toContain('mailto:');
+    await page.goto(path);
+    const mail = page.locator('main').getByRole('link', { name: 'vorstand@msg-übersee.de' });
+    await expect(mail).toHaveAttribute('href', 'mailto:vorstand@xn--msg-bersee-deb.de');
+  }
 });

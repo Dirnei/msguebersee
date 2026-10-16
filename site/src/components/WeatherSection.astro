@@ -7,24 +7,24 @@
         <h3>Wind heute <small class="muted">(alle 10 Min., antippen für Details)</small></h3>
         <div class="bars" data-live="bars" data-chart="wind"><p class="muted">Lade Messwerte …</p></div>
         <dl>
-          <div><dt>Temperatur</dt><dd><span data-live="temp">–</span> °C</dd></div>
-          <div><dt>Luftdruck</dt><dd><span data-live="pressure">–</span> hPa</dd></div>
-          <div><dt>Windrichtung</dt><dd><span data-live="dir">–</span></dd></div>
+          <div><dt>Temperatur</dt><dd><span data-live="temp">-</span> °C</dd></div>
+          <div><dt>Luftdruck</dt><dd><span data-live="pressure">-</span> hPa</dd></div>
+          <div><dt>Windrichtung</dt><dd><span data-live="dir">-</span></dd></div>
         </dl>
       </article>
       <article class="card">
-        <h3>Webcam – die letzten Stunden <small class="muted">(antippen zum Vergrößern)</small></h3>
+        <h3>Webcam der letzten Stunden <small class="muted">(antippen zum Vergrößern)</small></h3>
         <div class="thumbs" data-live="thumbs"><p class="muted">Lade Webcam …</p></div>
         <p class="muted">Tipp: Stehen Autos am Platz, fliegt meistens jemand.</p>
       </article>
     </div>
     <article class="card forecast">
-      <h3>Prognose – die nächsten 12 Stunden <small class="muted">(antippen für Details)</small></h3>
+      <h3>Prognose für die nächsten 12 Stunden <small class="muted">(antippen für Details)</small></h3>
       <div data-live="forecast" data-chart="forecast"><p class="muted">Lade Prognose …</p></div>
-      <p class="muted source">Vorhersage: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a> (CC BY 4.0), Modelle u. a. des Deutschen Wetterdienstes. Wettermodelle erfassen örtliche Winde am Platz oft nicht – die Messwerte oben und der Blick zum Windsack zählen mehr.</p>
+      <p class="muted source">Vorhersage: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a> (CC BY 4.0), Modelle u. a. des Deutschen Wetterdienstes. Wettermodelle erfassen örtliche Winde am Platz oft nicht. Die Messwerte oben und der Blick zum Windsack zählen mehr.</p>
     </article>
     <details>
-      <summary>Mehr Diagramme &amp; alle Messwerte</summary>
+      <summary>Mehr Diagramme</summary>
       <div class="more">
         <figure class="card">
           <figcaption>Windrose heute <small class="muted">(woher der Wind kam)</small></figcaption>
@@ -40,10 +40,6 @@
             <div data-live="pressure-chart" data-chart="pressure"></div>
           </figure>
         </div>
-        <figure class="card table-card">
-          <figcaption>Alle Messwerte heute</figcaption>
-          <div class="table-wrap" data-live="table" data-chart="table"></div>
-        </figure>
       </div>
     </details>
   </div>
@@ -70,11 +66,5 @@
   .more figure { margin: 0; min-width: 0; }
   figcaption { font-weight: 700; margin-bottom: 8px; }
   .lines { display: grid; gap: 20px; }
-  .table-card { grid-column: 1 / -1; }
-  .table-wrap { max-height: 320px; overflow-y: auto; }
-  .table-wrap :global(table) { width: 100%; border-collapse: collapse; font-size: .9rem; font-variant-numeric: tabular-nums; }
-  .table-wrap :global(th) { position: sticky; top: 0; background: #fff; text-align: right; color: var(--muted); font-weight: 600; padding: 4px 8px; border-bottom: 1px solid var(--line); }
-  .table-wrap :global(td) { text-align: right; padding: 3px 8px; border-bottom: 1px solid var(--line); }
-  .table-wrap :global(th:first-child), .table-wrap :global(td:first-child) { text-align: left; }
   @media (max-width: 760px) { .more { grid-template-columns: 1fr; } }
 </style>

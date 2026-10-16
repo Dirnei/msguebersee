@@ -1,28 +1,35 @@
 ---
-import { verein } from '../data/verein';
+import MessageCircle from '@lucide/astro/icons/message-circle';
+import { whatsapp } from '../data/verein';
+import { hide } from '../lib/obfuscate';
 
-const { nummer, ansprechperson, text } = verein.whatsapp;
-const href = nummer ? `https://wa.me/${nummer}?text=${encodeURIComponent(text)}` : null;
+const { nummer, ansprechperson, text } = whatsapp;
+// never in the HTML as plain text, rebuilt in the browser on first touch (scripts/reveal.ts)
+const wa = nummer ? hide(`https://wa.me/${nummer}?text=${encodeURIComponent(text)}`) : null;
 ---
 <section id="mitmachen">
   <div class="container">
     <div class="box">
       <p class="eyebrow">Mitmachen</p>
       <h2>Lust bekommen?</h2>
-      {href
+      {wa
         ? <>
-            <p>Schreib {ansprechperson || 'uns'} einfach auf WhatsApp – wir sagen dir, wann jemand am Platz ist.</p>
-            <a class="wa" href={href} target="_blank" rel="noopener">💬 Auf WhatsApp schreiben</a>
+            <p>Schreib {ansprechperson || 'uns'} einfach auf WhatsApp, oder komm einfach vorbei wenn du jemanden auf der Webcam siehst.</p>
+            <a class="wa" href="#mitmachen" data-wa={wa} rel="noopener"><MessageCircle size={20} aria-hidden="true" /> Auf WhatsApp schreiben</a>
           </>
-        : <p>Komm einfach am Platz vorbei – schau vorher auf die Webcam, ob jemand da ist.</p>}
+        : <p>Komm einfach am Platz vorbei und schau vorher auf die Webcam, ob jemand da ist.</p>}
     </div>
   </div>
 </section>
+
+<script>
+  import '../scripts/reveal.ts';
+</script>
 
 <style>
   .box { background: var(--ink); color: #fff; border-radius: 18px; padding: clamp(24px, 5vw, 44px); }
   .eyebrow { color: #6cc4f2; }
   h2 { margin-bottom: 10px; }
   p { opacity: .9; max-width: 560px; }
-  .wa { display: inline-block; margin-top: 10px; background: #25d366; color: #06301a; font-weight: 800; text-decoration: none; padding: .8rem 1.3rem; border-radius: 999px; }
+  .wa { display: inline-flex; align-items: center; gap: .5em; margin-top: 10px; background: #25d366; color: #06301a; font-weight: 800; text-decoration: none; padding: .8rem 1.3rem; border-radius: 999px; }
 </style>

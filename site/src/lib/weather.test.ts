@@ -6,8 +6,8 @@ describe('ampel', () => {
   test.each([
     [0, 'gruen', 'Gutes Flugwetter'],
     [14.9, 'gruen', 'Gutes Flugwetter'],
-    [15, 'gelb', 'Böig – nur für Erfahrene'],
-    [25, 'gelb', 'Böig – nur für Erfahrene'],
+    [15, 'gelb', 'Böig, nur für Erfahrene'],
+    [25, 'gelb', 'Böig, nur für Erfahrene'],
     [25.1, 'rot', 'Zu windig'],
   ])('%s km/h -> %s', (kmh, level, label) => {
     expect(ampel(kmh, limits)).toEqual({ level, label });

@@ -62,7 +62,7 @@ const short = (t: string) => (t.endsWith(':00') ? String(Number(t.slice(0, 2))) 
 function fensterText(f: Fenster): string {
   if (f === 'sonne') return 'Sonnenaufgang bis Sonnenuntergang';
   if (f.length === 0) return 'kein Flugbetrieb';
-  const parts = f.map(([a, b]) => `${short(a)}–${short(b)}`);
+  const parts = f.map(([a, b]) => `${short(a)}-${short(b)}`);
   const list = parts.length > 1 ? `${parts.slice(0, -1).join(', ')} und ${parts[parts.length - 1]}` : parts[0];
   return `${list} Uhr`;
 }
@@ -71,10 +71,10 @@ const same = (a: Fenster, b: Fenster) => JSON.stringify(a) === JSON.stringify(b)
 
 // Lines for the Flugzeiten card, grouping days with identical times
 export function beschreibung(z: Flugzeit): string[] {
-  if (same(z.werktags, z.samstag) && same(z.samstag, z.sonntag)) return [`Mo–So: ${fensterText(z.werktags)}`];
+  if (same(z.werktags, z.samstag) && same(z.samstag, z.sonntag)) return [`Mo-So: ${fensterText(z.werktags)}`];
   const lines = same(z.werktags, z.samstag)
-    ? [`Mo–Sa: ${fensterText(z.werktags)}`]
-    : [`Mo–Fr: ${fensterText(z.werktags)}`, `Sa: ${fensterText(z.samstag)}`];
+    ? [`Mo-Sa: ${fensterText(z.werktags)}`]
+    : [`Mo-Fr: ${fensterText(z.werktags)}`, `Sa: ${fensterText(z.samstag)}`];
   return [...lines, `So & Feiertag: ${fensterText(z.sonntag)}`];
 }
 

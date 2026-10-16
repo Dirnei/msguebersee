@@ -1,0 +1,11 @@
+---
+import { impressum } from '../data/verein';
+import { hide } from '../lib/obfuscate';
+
+// without JavaScript the reader still sees "vorstand (at) msg-übersee.de"
+---
+<a data-mail={hide(impressum.emailHref)} data-mail-text={hide(impressum.email)}>{impressum.email.replace('@', ' (at) ')}</a>
+
+<script>
+  import '../scripts/reveal.ts';
+</script>

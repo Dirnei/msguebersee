@@ -35,7 +35,7 @@ als `RELAY_URL` eintragen; die Website wird beim nächsten Build damit gebaut.
 |---|---|---|
 | `PORT` | `8080` | Port im Container |
 | `UPSTREAM_BASE` | `https://xn--msg-bersee-deb.de/Programme/` | alte Station |
-| `ALLOWED_ORIGINS` | – | erlaubte Website-Origins, kommagetrennt |
+| `ALLOWED_ORIGINS` | - | erlaubte Website-Origins, kommagetrennt |
 | `CACHE_SECONDS` | `300` | so lange werden Upstream-Antworten wiederverwendet |
 | `FORECAST_LAT` / `FORECAST_LON` | Flugplatz | Ort der Prognose |
 | `FORECAST_CACHE_SECONDS` | `1800` | so lange wird die Prognose wiederverwendet |

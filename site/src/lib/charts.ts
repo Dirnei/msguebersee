@@ -31,7 +31,7 @@ export function tip(p: Point): string {
 export function speedClasses(limits: Limits) {
   return [
     { level: 'gruen' as const, label: `unter ${limits.gruenBisKmh} km/h` },
-    { level: 'gelb' as const, label: `${limits.gruenBisKmh}–${limits.gelbBisKmh} km/h` },
+    { level: 'gelb' as const, label: `${limits.gruenBisKmh}-${limits.gelbBisKmh} km/h` },
     { level: 'rot' as const, label: `über ${limits.gelbBisKmh} km/h` },
   ];
 }
@@ -288,15 +288,6 @@ export function windRoseSvg(points: Point[], limits: Limits, size: number): stri
     (calm ? `<text x="${c}" y="${size - 2}" text-anchor="middle" class="tick">${calm}× windstill</text>` : '') +
     `</svg>`
   );
-}
-
-export function valuesTableHtml(points: Point[]): string {
-  if (points.length === 0) return NO_DATA;
-  const rows = [...points]
-    .reverse()
-    .map((p) => `<tr><td>${formatClock(p.time)}</td><td>${p.windKmh}</td><td>${p.windDir}</td><td>${p.tempC}</td><td>${p.pressureHpa}</td></tr>`)
-    .join('');
-  return `<table><thead><tr><th>Zeit</th><th>Wind km/h</th><th>aus</th><th>°C</th><th>hPa</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
 export function forecastChartSvg(hours: ForecastHour[], limits: Limits, width: number, ctx?: TimeContext): string {

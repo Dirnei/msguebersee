@@ -1,5 +1,5 @@
 import { verein } from '../data/verein';
-import { forecastChartSvg, legendHtml, lineChartSvg, valuesTableHtml, windChartSvg, windRoseSvg } from '../lib/charts';
+import { forecastChartSvg, legendHtml, lineChartSvg, windChartSvg, windRoseSvg } from '../lib/charts';
 import { timeContext, type TimeContext } from '../lib/flugzeiten';
 import { forecastSummary, upcoming, type ForecastHour, type ForecastResponse } from '../lib/forecast';
 import { ampel, formatClock, formatDay, isOutdated, isToday, recentPeak, type Point, type WeatherResponse, type WebcamResponse } from '../lib/weather';
@@ -64,7 +64,6 @@ function renderCharts() {
     else if (kind === 'rose') box.innerHTML = windRoseSvg(pts, verein.ampel, Math.min(width, 320)) + (pts.length ? legendHtml(verein.ampel) : '');
     else if (kind === 'temp') box.innerHTML = lineChartSvg(pts, 'tempC', '°C', 'Temperatur', width, dayCtx);
     else if (kind === 'pressure') box.innerHTML = lineChartSvg(pts, 'pressureHpa', 'hPa', 'Luftdruck', width, dayCtx);
-    else if (kind === 'table') box.innerHTML = valuesTableHtml(pts);
   }
 }
 
@@ -132,11 +131,11 @@ function setCompass(c: Point | null) {
     needle.dataset.angle = String(angle);
     needle.style.transform = `rotate(${angle}deg)`;
   }
-  setText('dir-long', !c ? '–' : calm ? 'windstill' : `aus ${c.windDir}`);
+  setText('dir-long', !c ? '-' : calm ? 'windstill' : `aus ${c.windDir}`);
 }
 
 function clearValues() {
-  for (const name of ['wind', 'dir', 'temp', 'pressure']) setText(name, '–');
+  for (const name of ['wind', 'dir', 'temp', 'pressure']) setText(name, '-');
   setCompass(null);
   setText('time', '');
   setText('peak', '');
@@ -277,7 +276,7 @@ function weatherDown() {
   clearValues();
   setStatus('off', 'Wetterdaten gerade nicht verfügbar');
   chartPoints = null;
-  for (const name of ['bars', 'rose', 'temp-chart', 'pressure-chart', 'table']) setMessage(name, 'Messwerte gerade nicht verfügbar');
+  for (const name of ['bars', 'rose', 'temp-chart', 'pressure-chart']) setMessage(name, 'Messwerte gerade nicht verfügbar');
 }
 
 const webcamDown = () => setMessage('thumbs', 'Webcam gerade nicht verfügbar');

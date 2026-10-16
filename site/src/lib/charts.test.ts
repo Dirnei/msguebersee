@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { compass16, forecastChartSvg, legendHtml, lineChartSvg, minuteOfDay, NO_DATA, valuesTableHtml, windChartSvg, windRoseSvg } from './charts';
+import { compass16, forecastChartSvg, legendHtml, lineChartSvg, minuteOfDay, NO_DATA, windChartSvg, windRoseSvg } from './charts';
 import { verein } from '../data/verein';
 import { timeContext } from './flugzeiten';
 import type { ForecastHour } from './forecast';
@@ -70,7 +70,7 @@ test('lineChartSvg labels only the latest value', () => {
 describe('windRoseSvg', () => {
   test('stacks speed classes per direction and names the main direction', () => {
     const svg = windRoseSvg([point('10:00', 5), point('10:10', 20), point('10:20', 8, 90, 'O')], limits, 300);
-    expect(svg).toContain('data-tip="Aus SW: 2 Messwerte (1× unter 15 km/h, 1× 15–25 km/h)"');
+    expect(svg).toContain('data-tip="Aus SW: 2 Messwerte (1× unter 15 km/h, 1× 15-25 km/h)"');
     expect(svg).toContain('data-tip="Aus O: 1 Messwerte (1× unter 15 km/h)"');
     expect(svg).toContain('meist aus SW');
   });
@@ -84,13 +84,8 @@ describe('windRoseSvg', () => {
 
 test('legend names the traffic-light classes from the club limits', () => {
   expect(legendHtml(limits)).toContain('unter 15 km/h');
-  expect(legendHtml(limits)).toContain('15–25 km/h');
+  expect(legendHtml(limits)).toContain('15-25 km/h');
   expect(legendHtml(limits)).toContain('über 25 km/h');
-});
-
-test('values table lists newest first', () => {
-  const html = valuesTableHtml([point('09:00', 3), point('10:00', 4)]);
-  expect(html.indexOf('10:00')).toBeLessThan(html.indexOf('09:00'));
 });
 
 describe('time context in charts', () => {
@@ -129,7 +124,7 @@ describe('time context in charts', () => {
       time: `2026-10-18T${h}:00:00+02:00`, windKmh: 5, gustKmh: 9, windDeg: 180, windDir: 'S', tempC: 12, rainPct: 0,
     }));
     const svg = forecastChartSvg(hours, limits, 600, sunday);
-    // 16–19 h on a Sunday: electric until sunset, combustion until 17:30
+    // 16-19 h on a Sunday: electric until sunset, combustion until 17:30
     expect(svg.match(/class="fly"/g)).toHaveLength(2);
     expect(svg).toContain(`Sonnenuntergang ${berlinClock(sunday.sun[0].set)}`);
   });

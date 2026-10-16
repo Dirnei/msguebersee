@@ -12,7 +12,7 @@ export type Ampel = { level: 'gruen' | 'gelb' | 'rot'; label: string };
 
 export function ampel(windKmh: number, limits: { gruenBisKmh: number; gelbBisKmh: number }): Ampel {
   if (windKmh < limits.gruenBisKmh) return { level: 'gruen', label: 'Gutes Flugwetter' };
-  if (windKmh <= limits.gelbBisKmh) return { level: 'gelb', label: 'Böig – nur für Erfahrene' };
+  if (windKmh <= limits.gelbBisKmh) return { level: 'gelb', label: 'Böig, nur für Erfahrene' };
   return { level: 'rot', label: 'Zu windig' };
 }
 
