@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths: ['site/**', 'brand/**', '.github/workflows/site.yml']
   pull_request:
-    paths: ['site/**', '.github/workflows/site.yml']
+    paths: ['site/**', 'brand/**', '.github/workflows/site.yml']
   workflow_dispatch:
 
 permissions:

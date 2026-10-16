@@ -71,3 +71,27 @@ test('concurrent requests share one upstream load', async () => {
   assert.equal(calls.count, 1);
   assert.ok(results.every((r) => r.value === 'a'));
 });
+
+test('refresh reloads before expiry so get never waits', async () => {
+  const c = clock();
+  const { load, calls } = loader(['a', 'b']);
+  const get = createCache(load, opts(c));
+  assert.equal(await get.refresh(), true);
+  c.advance(270_000);
+  assert.equal(await get.refresh(), true);
+  c.advance(270_000);
+  assert.deepEqual(await get(), { value: 'b', stale: false });
+  assert.equal(calls.count, 2);
+});
+
+test('failed refresh keeps the old value, marked stale once expired', async () => {
+  const c = clock();
+  const { load } = loader(['a', new Error('down')]);
+  const get = createCache(load, opts(c));
+  await get.refresh();
+  c.advance(270_000);
+  assert.equal(await get.refresh(), false);
+  assert.deepEqual(await get(), { value: 'a', stale: false });
+  c.advance(30_000);
+  assert.deepEqual(await get(), { value: 'a', stale: true });
+});

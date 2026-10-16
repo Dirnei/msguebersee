@@ -12,6 +12,7 @@ const server = createServer((req, res) => {
     res.end();
   });
 });
+handle.keepWarm();
 server.listen(config.port, () => {
   console.log(`msg-relay listening on :${config.port}, origins: ${config.allowedOrigins.join(', ') || '(none)'}`);
 });

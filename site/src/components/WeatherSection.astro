@@ -1,14 +1,11 @@
----
-const station = 'https://xn--msg-bersee-deb.de/Programme/';
----
 <section id="wetter" class="band">
   <div class="container">
     <p class="eyebrow">Wetter &amp; Webcam</p>
     <h2>Wie sieht es gerade am Platz aus?</h2>
     <div class="grid-2">
       <article class="card">
-        <h3>Wind heute <small class="muted">(alle 10 Min.)</small></h3>
-        <div class="bars" data-live="bars"><p class="muted">Lade Messwerte …</p></div>
+        <h3>Wind heute <small class="muted">(alle 10 Min., antippen für Details)</small></h3>
+        <div class="bars" data-live="bars" data-chart="wind"><p class="muted">Lade Messwerte …</p></div>
         <dl>
           <div><dt>Temperatur</dt><dd><span data-live="temp">–</span> °C</dd></div>
           <div><dt>Luftdruck</dt><dd><span data-live="pressure">–</span> hPa</dd></div>
@@ -16,16 +13,37 @@ const station = 'https://xn--msg-bersee-deb.de/Programme/';
         </dl>
       </article>
       <article class="card">
-        <h3>Webcam – die letzten Stunden</h3>
+        <h3>Webcam – die letzten Stunden <small class="muted">(antippen zum Vergrößern)</small></h3>
         <div class="thumbs" data-live="thumbs"><p class="muted">Lade Webcam …</p></div>
         <p class="muted">Tipp: Stehen Autos am Platz, fliegt meistens jemand.</p>
       </article>
     </div>
+    <article class="card forecast">
+      <h3>Prognose – die nächsten 12 Stunden <small class="muted">(antippen für Details)</small></h3>
+      <div data-live="forecast" data-chart="forecast"><p class="muted">Lade Prognose …</p></div>
+      <p class="muted source">Vorhersage: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a> (CC BY 4.0), Modelle u. a. des Deutschen Wetterdienstes. Wettermodelle erfassen örtliche Winde am Platz oft nicht – die Messwerte oben und der Blick zum Windsack zählen mehr.</p>
+    </article>
     <details>
-      <summary>Diagramme der Wetterstation</summary>
-      <div class="charts">
-        <img src={`${station}wind.jpg`} data-refresh-src={`${station}wind.jpg`} alt="Windgeschwindigkeit heute (Diagramm der Wetterstation)" loading="lazy" />
-        <img src={`${station}windrose_db_msg1.php`} data-refresh-src={`${station}windrose_db_msg1.php`} alt="Windrose heute" loading="lazy" />
+      <summary>Mehr Diagramme &amp; alle Messwerte</summary>
+      <div class="more">
+        <figure class="card">
+          <figcaption>Windrose heute <small class="muted">(woher der Wind kam)</small></figcaption>
+          <div data-live="rose" data-chart="rose"></div>
+        </figure>
+        <div class="lines">
+          <figure class="card">
+            <figcaption>Temperatur</figcaption>
+            <div data-live="temp-chart" data-chart="temp"></div>
+          </figure>
+          <figure class="card">
+            <figcaption>Luftdruck</figcaption>
+            <div data-live="pressure-chart" data-chart="pressure"></div>
+          </figure>
+        </div>
+        <figure class="card table-card">
+          <figcaption>Alle Messwerte heute</figcaption>
+          <div class="table-wrap" data-live="table" data-chart="table"></div>
+        </figure>
       </div>
     </details>
   </div>
@@ -33,19 +51,30 @@ const station = 'https://xn--msg-bersee-deb.de/Programme/';
 
 <style>
   h3 { font-size: 1.05rem; margin-bottom: 12px; }
-  .bars { min-height: 110px; }
-  .bars :global(.wind-bars) { width: 100%; height: 90px; fill: var(--blue); }
-  .bars :global(.axis) { display: flex; justify-content: space-between; font-size: .75rem; color: var(--muted); }
+  .bars { min-height: 330px; }
   dl { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 14px 0 0; }
   dt { font-size: .8rem; color: var(--muted); }
   dd { margin: 0; font-weight: 700; }
   .thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; min-height: 140px; }
   .thumbs > :global(p) { grid-column: 1 / -1; }
   .thumbs :global(figure) { margin: 0; position: relative; }
+  .thumbs :global(button) { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; border-radius: 6px; }
   .thumbs :global(img) { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 6px; }
   .thumbs :global(figcaption) { position: absolute; left: 4px; bottom: 4px; font-size: .7rem; background: rgba(0, 0, 0, .55); color: #fff; padding: 0 4px; border-radius: 3px; }
+  .forecast { margin-top: 20px; }
+  .forecast [data-chart] { min-height: 310px; }
+  .source { margin: 8px 0 0; font-size: .8rem; }
   details { margin-top: 18px; }
   summary { cursor: pointer; font-weight: 600; color: var(--blue-dark); }
-  .charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 12px; }
-  .charts img { background: #fff; border-radius: 8px; }
+  .more { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); margin-top: 12px; }
+  .more figure { margin: 0; min-width: 0; }
+  figcaption { font-weight: 700; margin-bottom: 8px; }
+  .lines { display: grid; gap: 20px; }
+  .table-card { grid-column: 1 / -1; }
+  .table-wrap { max-height: 320px; overflow-y: auto; }
+  .table-wrap :global(table) { width: 100%; border-collapse: collapse; font-size: .9rem; font-variant-numeric: tabular-nums; }
+  .table-wrap :global(th) { position: sticky; top: 0; background: #fff; text-align: right; color: var(--muted); font-weight: 600; padding: 4px 8px; border-bottom: 1px solid var(--line); }
+  .table-wrap :global(td) { text-align: right; padding: 3px 8px; border-bottom: 1px solid var(--line); }
+  .table-wrap :global(th:first-child), .table-wrap :global(td:first-child) { text-align: left; }
+  @media (max-width: 760px) { .more { grid-template-columns: 1fr; } }
 </style>

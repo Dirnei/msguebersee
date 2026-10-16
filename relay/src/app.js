@@ -1,4 +1,5 @@
 import { createCache } from './cache.js';
+import { forecastUrl, parseForecast } from './parse-forecast.js';
 import { parseWeather } from './parse-weather.js';
 import { parseWebcam } from './parse-webcam.js';
 
@@ -12,8 +13,12 @@ export function createApp({ config, fetchText, now = Date.now }) {
     if (images.length === 0) throw new Error('no webcam images found');
     return images;
   }, opts);
+  const forecast = createCache(
+    async () => parseForecast(JSON.parse(await fetchText(forecastUrl(config)))),
+    { ttlMs: config.forecastCacheMs, retryMs: RETRY_MS, now },
+  );
 
-  return async function handle(req, res) {
+  async function handle(req, res) {
     const origin = req.headers.origin;
     res.setHeader('vary', 'Origin');
     if (origin && config.allowedOrigins.includes(origin)) res.setHeader('access-control-allow-origin', origin);
@@ -38,6 +43,10 @@ export function createApp({ config, fetchText, now = Date.now }) {
           const { value, stale } = await webcam();
           return sendJson(res, 200, { images: value, stale });
         }
+        case '/forecast': {
+          const { value, stale } = await forecast();
+          return sendJson(res, 200, { source: 'Open-Meteo.com', hours: value, stale });
+        }
         case '/webcam/latest.jpg': {
           const { value } = await webcam();
           res.writeHead(302, { location: value[0].url, 'cache-control': 'no-store' });
@@ -50,7 +59,21 @@ export function createApp({ config, fetchText, now = Date.now }) {
       console.error(`${path}: ${error.message}`);
       return sendJson(res, 503, { error: 'upstream unavailable' });
     }
+  }
+
+  // fill the caches at start and refresh them shortly before they expire,
+  // so even the first visitor after a quiet hour gets an instant answer
+  handle.keepWarm = (setTimer = setInterval) => {
+    const timers = [];
+    for (const [cache, ttlMs] of [[weather, opts.ttlMs], [webcam, opts.ttlMs], [forecast, config.forecastCacheMs]]) {
+      cache.refresh();
+      const timer = setTimer(cache.refresh, Math.max(ttlMs * 0.9, 1000));
+      timer.unref?.();
+      timers.push(timer);
+    }
+    return () => timers.forEach(clearInterval);
   };
+  return handle;
 }
 
 function sendJson(res, status, body) {

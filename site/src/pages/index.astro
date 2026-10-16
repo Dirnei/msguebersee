@@ -8,8 +8,9 @@ import GoodToKnow from '../components/GoodToKnow.astro';
 import Airfield from '../components/Airfield.astro';
 import JoinCta from '../components/JoinCta.astro';
 import Footer from '../components/Footer.astro';
+import Lightbox from '../components/Lightbox.astro';
 ---
-<Base title="MSG Übersee – Modellflug am Chiemsee" description="Modellsportgruppe Übersee e. V.: Modellflugplatz in Übersee-Luft. Live-Wetter, Webcam und wie du mitmachen kannst.">
+<Base title="MSG Übersee" description="Modellsportgruppe Übersee e. V.: Modellflugplatz in Übersee-Luft. Live-Wetter, Webcam und wie du mitmachen kannst.">
   <Header />
   <main>
     <Hero />
@@ -20,6 +21,7 @@ import Footer from '../components/Footer.astro';
     <JoinCta />
   </main>
   <Footer />
+  <Lightbox />
   <script>
     import '../scripts/live.ts';
   </script>

@@ -1,11 +1,7 @@
 import { describe, expect, test } from 'vitest';
-import { ampel, formatClock, formatDay, isOutdated, isToday, windBarsSvg, type Point } from './weather';
+import { ampel, formatClock, formatDay, isOutdated, isToday, recentPeak, type Point } from './weather';
 
 const limits = { gruenBisKmh: 15, gelbBisKmh: 25 };
-const point = (time: string, windKmh: number): Point => ({
-  time: `2026-10-15T${time}:00+02:00`, windDir: 'SW', windDeg: 224, windKmh, tempC: 14, pressureHpa: 1030,
-});
-
 describe('ampel', () => {
   test.each([
     [0, 'gruen', 'Gutes Flugwetter'],
@@ -30,25 +26,6 @@ test('isOutdated after 30 minutes', () => {
   expect(isOutdated('2026-10-15T20:50:00+02:00', now, 5)).toBe(true);
 });
 
-describe('windBarsSvg', () => {
-  test('one bar per measurement, peak in label, axis with first/last time', () => {
-    const html = windBarsSvg([point('00:01', 2), point('12:00', 30), point('20:40', 0)]);
-    expect(html.match(/<rect /g)).toHaveLength(3);
-    expect(html).toContain('aria-label="Windverlauf heute, höchstens 30 km/h"');
-    expect(html).toContain('<span>00:01</span><span>20:40</span>');
-  });
-
-  test('calm wind still renders a visible bar', () => {
-    const html = windBarsSvg([point('10:00', 0)], { width: 100, height: 90 });
-    const height = Number(/height="([\d.]+)"><title>/.exec(html)?.[1]);
-    expect(height).toBeGreaterThanOrEqual(1);
-  });
-
-  test('no data gives a friendly message instead of an empty chart', () => {
-    expect(windBarsSvg([])).toBe('<p class="muted">Heute noch keine Messwerte</p>');
-  });
-});
-
 test('isToday compares with the current date in Europe/Berlin', () => {
   // 23:30 UTC on the 15th is already the 16th in Berlin (CEST)
   const now = Date.parse('2026-10-15T23:30:00Z');
@@ -58,4 +35,23 @@ test('isToday compares with the current date in Europe/Berlin', () => {
 
 test('formatDay gives a short German date', () => {
   expect(formatDay('2026-10-05T20:40:00+02:00')).toBe('05.10.');
+});
+
+describe('recentPeak', () => {
+  const at = (time: string, windKmh: number): Point => ({
+    time: `2026-10-16T${time}:00+02:00`, windDir: 'S', windDeg: 180, windKmh, tempC: 15, pressureHpa: 1027,
+  });
+  const day = [at('08:50', 30), at('09:17', 22), at('09:47', 15), at('09:57', 17), at('10:07', 13)];
+
+  test('takes the strongest reading of the last 60 minutes', () => {
+    expect(recentPeak(day, day[4])).toBe(22);
+  });
+
+  test('readings older than the window do not count', () => {
+    expect(recentPeak(day, day[4], 30)).toBe(17);
+  });
+
+  test('a lone reading is its own peak', () => {
+    expect(recentPeak([], at('10:07', 13))).toBe(13);
+  });
 });

@@ -1,0 +1,26 @@
+<dialog class="lightbox" data-live="lightbox" aria-label="Webcam groß">
+  <figure>
+    <img data-live="lightbox-img" alt="" />
+    <figcaption>
+      <span data-live="lightbox-caption"></span>
+      <span class="nav">
+        <button type="button" data-live="lightbox-older" aria-label="Älteres Bild">‹ älter</button>
+        <button type="button" data-live="lightbox-newer" aria-label="Neueres Bild">neuer ›</button>
+      </span>
+    </figcaption>
+  </figure>
+  <form method="dialog"><button class="close" aria-label="Schließen">×</button></form>
+</dialog>
+
+<style>
+  .lightbox { padding: 0; border: 0; border-radius: var(--radius); background: #0b141c; color: #fff; width: min(1100px, 100vw - 24px); max-height: calc(100vh - 24px); overflow: hidden; }
+  .lightbox::backdrop { background: rgba(5, 15, 25, .85); }
+  figure { margin: 0; }
+  img { width: 100%; max-height: calc(100vh - 90px); object-fit: contain; background: #000; }
+  figcaption { display: flex; flex-wrap: wrap; gap: 8px 16px; justify-content: space-between; align-items: center; padding: 10px 14px; font-weight: 600; }
+  .nav { display: flex; gap: 8px; }
+  button { font: inherit; cursor: pointer; border: 0; border-radius: 999px; padding: .4rem .9rem; background: rgba(255, 255, 255, .14); color: #fff; }
+  button:hover:not(:disabled) { background: var(--blue); }
+  button:disabled { opacity: .35; cursor: default; }
+  .close { position: absolute; top: 8px; right: 8px; width: 40px; height: 40px; padding: 0; font-size: 1.6rem; line-height: 1; background: rgba(0, 0, 0, .55); }
+</style>

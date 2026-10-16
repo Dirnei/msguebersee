@@ -1,14 +1,12 @@
 ---
 import { verein } from '../data/verein';
+import { beschreibung } from '../lib/flugzeiten';
 import { withBase } from '../lib/paths';
 
 const k = verein.koordinaten;
 const routeUrl = k
   ? `https://www.openstreetmap.org/directions?to=${k.lat}%2C${k.lon}`
   : `https://www.openstreetmap.org/search?query=${encodeURIComponent('Übersee Luft')}`;
-const mapUrl = k
-  ? `https://www.openstreetmap.org/export/embed.html?bbox=${k.lon - 0.012}%2C${k.lat - 0.006}%2C${k.lon + 0.012}%2C${k.lat + 0.006}&layer=mapnik&marker=${k.lat}%2C${k.lon}`
-  : null;
 ---
 <section id="flugplatz">
   <div class="container grid-2">
@@ -16,8 +14,13 @@ const mapUrl = k
       <p class="eyebrow">Der Flugplatz</p>
       <h2>{verein.ort}</h2>
       <p>{verein.lage}</p>
-      {mapUrl && <iframe class="map" src={mapUrl} title="Karte zum Flugplatz" loading="lazy"></iframe>}
-      <a class="btn" href={routeUrl} rel="noopener">Route planen</a>
+      {k && (
+        <div class="map-wrap">
+          <div class="map" data-map data-lat={k.lat} data-lon={k.lon} role="region" aria-label="Karte zum Flugplatz"></div>
+          <p class="map-hint" data-map-hint hidden></p>
+        </div>
+      )}
+      <a class="btn" href={routeUrl} target="_blank" rel="noopener">Route planen</a>
     </div>
     <div class="card times">
       <h3>Flugzeiten</h3>
@@ -25,18 +28,24 @@ const mapUrl = k
         {verein.flugzeiten.map((f) => (
           <div>
             <dt>{f.was}</dt>
-            {f.zeiten.map((z) => <dd>{z}</dd>)}
+            {beschreibung(f).map((z) => <dd>{z}</dd>)}
           </div>
         ))}
       </dl>
       <p class="muted">Fliegen dürfen Mitglieder und Gäste mit Erlaubnis des Vorstands. Zuschauen darf jeder.
-        Details in der <a href={withBase('dokumente/platzordnung.pdf')}>Platzordnung (PDF)</a>.</p>
+        Details in der <a href={withBase('dokumente/platzordnung.pdf')} target="_blank">Platzordnung (PDF)</a>.</p>
     </div>
   </div>
 </section>
 
+{k && <script>import '../scripts/map.ts';</script>}
+
 <style>
-  .map { width: 100%; height: 240px; border: 0; border-radius: var(--radius); margin: 8px 0 16px; }
+  .map-wrap { position: relative; margin: 8px 0 16px; }
+  .map { height: 240px; border-radius: var(--radius); z-index: 0; touch-action: pan-y; }
+  .map-hint { position: absolute; inset: 0; z-index: 1; margin: 0; display: grid; place-items: center; border-radius: var(--radius); background: rgba(5, 15, 25, .55); color: #fff; font-weight: 700; pointer-events: none; }
+  .map-hint[hidden] { display: none; }
+  .map :global(.map-pin) { background: var(--blue); border: 3px solid #fff; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); box-shadow: 0 2px 6px rgba(0, 0, 0, .4); }
   .times { background: var(--surface); }
   h3 { margin-bottom: 10px; }
   dl { margin: 0 0 12px; display: grid; gap: 12px; }

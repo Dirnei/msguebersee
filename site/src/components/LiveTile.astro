@@ -1,19 +1,65 @@
+---
+// 12 minor ticks; the cardinal points carry their letter on the rim instead
+const ticks = Array.from({ length: 16 }, (_, i) => i * 22.5).filter((deg) => deg % 90 !== 0);
+const letters = [['N', 0], ['O', 90], ['S', 180], ['W', 270]] as const;
+const rad = (deg: number) => (deg * Math.PI) / 180;
+---
 <div class="tile" aria-live="polite">
   <p class="eyebrow">Live vom Platz <span data-live="time"></span></p>
-  <p class="values">
-    <span><b data-live="wind">–</b> <small>km/h <span data-live="dir"></span></small></span>
-    <span><b data-live="temp">–</b><small> °C</small></span>
-  </p>
-  <p class="status" data-live="status" data-level="off">Lade Wetterdaten …</p>
+  <div class="now">
+    <svg class="compass" data-live="compass" viewBox="-60 -60 120 120" role="img" aria-label="Wind wird geladen">
+      <circle r="57" class="face" />
+      {ticks.map((deg) => (
+        <line x1={Math.sin(rad(deg)) * 48} y1={-Math.cos(rad(deg)) * 48} x2={Math.sin(rad(deg)) * 53} y2={-Math.cos(rad(deg)) * 53} class="tick" />
+      ))}
+      {letters.map(([l, deg]) => (
+        <text x={Math.sin(rad(deg)) * 47} y={-Math.cos(rad(deg)) * 47 + 4} text-anchor="middle" class="letter">{l}</text>
+      ))}
+      <!-- hidden until data arrives (attribute spread: SVG typings lack `hidden`); rotated by the wind direction: dot at the rim where the wind comes from, one arrowhead pointing downwind -->
+      <g class="needle" data-live="needle" {...{ hidden: true }}>
+        <line y1="-33" y2="24" class="flow" />
+        <circle cy="-35" r="4.5" class="source" />
+        <path d="M0 38L-7 24L7 24Z" class="head" />
+      </g>
+      <circle r="21" class="hub" />
+      <text y="5" text-anchor="middle" class="speed" data-live="wind">–</text>
+      <text y="16" text-anchor="middle" class="unit">km/h</text>
+    </svg>
+    <div class="side">
+      <p class="status" data-live="status" data-level="off">Lade Wetterdaten …</p>
+      <p class="facts"><span data-live="dir-long">–</span> · <span data-live="temp">–</span> °C</p>
+      <p class="note" data-live="peak"></p>
+      <p class="note" data-live="forecast-summary"></p>
+    </div>
+  </div>
 </div>
 
 <style>
-  .tile { background: rgba(255, 255, 255, .96); color: var(--ink); border-radius: var(--radius); padding: 14px 18px; min-width: 240px; }
-  .values { display: flex; gap: 20px; align-items: baseline; margin: 6px 0 4px; }
-  b { font-size: 2rem; font-weight: 800; }
-  .status { margin: 0; font-weight: 600; font-size: .95rem; }
-  .status::before { content: ''; display: inline-block; width: .7em; height: .7em; border-radius: 50%; margin-right: .45em; background: var(--muted); }
-  .status[data-level='gruen']::before { background: var(--green); }
-  .status[data-level='gelb']::before { background: var(--yellow); }
-  .status[data-level='rot']::before { background: var(--red); }
+  .tile { background: rgba(255, 255, 255, .96); color: var(--ink); border-radius: var(--radius); padding: 12px 16px 14px; width: fit-content; max-width: 100%; }
+  .now { display: flex; align-items: center; gap: 14px; margin-top: 8px; }
+  .compass { width: 104px; height: 104px; flex: none; }
+  .face { fill: var(--surface); stroke: var(--blue); stroke-width: 2.5; }
+  .tick { stroke: #b5c0ca; stroke-width: 1; }
+  .letter { font-size: 12px; font-weight: 800; fill: var(--ink-soft); }
+  .needle { transform-box: view-box; transform-origin: 0 0; transition: transform .8s cubic-bezier(.3, 1.4, .5, 1); }
+  .needle[hidden] { display: none; }
+  .flow { stroke: var(--blue-dark); stroke-width: 2.5; stroke-linecap: round; }
+  .head { fill: var(--blue-dark); }
+  .source { fill: #fff; stroke: var(--blue-dark); stroke-width: 2.5; }
+  .hub { fill: #fff; stroke: var(--line); }
+  .speed { font-size: 19px; font-weight: 800; fill: var(--ink); }
+  .unit { font-size: 8px; fill: var(--muted); }
+  .side { min-width: 0; display: grid; gap: 4px; justify-items: start; }
+  .side p { margin: 0; }
+  /* traffic light as a tinted label: the colour lives here only */
+  .status { --c: var(--muted); display: inline-flex; align-items: center; gap: .45em; font-weight: 700; font-size: .92rem; line-height: 1.25;
+    padding: 4px 10px; border-radius: 999px; background: color-mix(in srgb, var(--c) 14%, #fff); }
+  .status::before { content: ''; flex: none; width: .65em; height: .65em; border-radius: 50%; background: var(--c); }
+  .status[data-level='gruen'] { --c: var(--green); }
+  .status[data-level='gelb'] { --c: var(--yellow); }
+  .status[data-level='rot'] { --c: var(--red); }
+  .facts { font-size: 1.05rem; font-weight: 700; padding-left: 2px; }
+  .note { font-size: .8rem; color: var(--muted); padding-left: 2px; line-height: 1.3; }
+  .note:empty { display: none; }
+  @media (prefers-reduced-motion: reduce) { .needle { transition: none; } }
 </style>

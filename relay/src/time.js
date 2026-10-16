@@ -23,3 +23,13 @@ function offsetMinutes(timestamp) {
 function pad(n) {
   return String(n).padStart(2, '0');
 }
+
+// unix seconds -> Berlin wall-clock ISO with offset, like the station times
+export function unixToBerlinIso(seconds) {
+  const ms = seconds * 1000;
+  const offset = offsetMinutes(ms);
+  const local = new Date(ms + offset * 60_000).toISOString().slice(0, 16);
+  const sign = offset >= 0 ? '+' : '-';
+  const abs = Math.abs(offset);
+  return `${local}:00${sign}${pad(Math.trunc(abs / 60))}:${pad(abs % 60)}`;
+}

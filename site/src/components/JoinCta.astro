@@ -12,7 +12,7 @@ const href = nummer ? `https://wa.me/${nummer}?text=${encodeURIComponent(text)}`
       {href
         ? <>
             <p>Schreib {ansprechperson || 'uns'} einfach auf WhatsApp – wir sagen dir, wann jemand am Platz ist.</p>
-            <a class="wa" href={href} rel="noopener">💬 Auf WhatsApp schreiben</a>
+            <a class="wa" href={href} target="_blank" rel="noopener">💬 Auf WhatsApp schreiben</a>
           </>
         : <p>Komm einfach am Platz vorbei – schau vorher auf die Webcam, ob jemand da ist.</p>}
     </div>

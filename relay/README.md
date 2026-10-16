@@ -10,6 +10,7 @@ als JSON für die neue Website bereitstellt. Keine Datenbank, keine Abhängigkei
 | `/weather` | aktuelle Werte + Tagesverlauf (`stale: true` = Station gerade nicht erreichbar, letzter Stand) |
 | `/webcam` | letzte Webcam-Bilder, neuestes zuerst |
 | `/webcam/latest.jpg` | Weiterleitung auf das neueste Bild |
+| `/forecast` | stündliche Wind-Prognose (Open-Meteo, heute + morgen) |
 | `/health` | `ok` |
 
 ## Betrieb
@@ -36,9 +37,14 @@ als `RELAY_URL` eintragen; die Website wird beim nächsten Build damit gebaut.
 | `UPSTREAM_BASE` | `https://xn--msg-bersee-deb.de/Programme/` | alte Station |
 | `ALLOWED_ORIGINS` | – | erlaubte Website-Origins, kommagetrennt |
 | `CACHE_SECONDS` | `300` | so lange werden Upstream-Antworten wiederverwendet |
+| `FORECAST_LAT` / `FORECAST_LON` | Flugplatz | Ort der Prognose |
+| `FORECAST_CACHE_SECONDS` | `1800` | so lange wird die Prognose wiederverwendet |
+| `FORECAST_BASE` | `https://api.open-meteo.com/v1/forecast` | Prognose-API |
 
 Hinweis: `auslesen_tabelle.php` löscht bei jedem Aufruf alte Datensätze (Verhalten der Station).
-Durch den Cache wird sie höchstens alle 5 Minuten aufgerufen.
+Der Relay füllt seine Caches beim Start und erneuert sie kurz vor Ablauf (bei 90 % der Cache-Zeit),
+damit kein Besucher auf die langsamen Upstream-Seiten warten muss. Die Station wird dadurch etwa alle
+4½ Minuten aufgerufen, auch ohne Besucher.
 
 ## Entwicklung
 

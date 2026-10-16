@@ -11,7 +11,7 @@ const i = verein.impressum;
     {i.anschrift.map((zeile) => <>{zeile}<br /></>)}
   </p>
   <p>
-    Vertreten durch den Vorstand{i.vorstand.length > 0 && <>: {i.vorstand.join(', ')}</>}.
+    Vertreten durch den Vorstand{i.vorstand.length > 0 && <>: {i.vorstand.join(' und ')}, jeweils allein vertretungsberechtigt</>}.
   </p>
   <h2>Registereintrag</h2>
   <p>Eingetragen im Vereinsregister.<br />Registergericht: {i.registergericht}<br />Registernummer: {i.registernummer}</p>
